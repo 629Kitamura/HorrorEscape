@@ -1,20 +1,22 @@
-using Cinemachine;
+ï»¿using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// ƒvƒŒƒCƒ„[‚ğ“®‚©‚·ƒRƒ“ƒ|[ƒlƒ“ƒg
+/// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚’å‹•ã‹ã™ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆ
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] float speed = 3f;
+    [SerializeField] float dashSpeed = 5f;
 
     CharacterController _controller;
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
-    CinemachineOrbitalTransposer _cinemachineOrbitalTransposer;//body‚Ìî•ñ‚ğ‚Â•Ï”
-    CinemachinePOV _cinemachinePOV;//aim‚ªPOV‚Ì‚Æ‚«‚Ìî•ñ‚ğ‚Â•Ï”
-
+    CinemachineOrbitalTransposer _cinemachineOrbitalTransposer;//bodyã®æƒ…å ±ã‚’æŒã¤å¤‰æ•°
+    CinemachinePOV _cinemachinePOV;//aimãŒPOVã®ã¨ãã®æƒ…å ±ã‚’æŒã¤å¤‰æ•°
+    float _verticalSpeed;
+    float _horizontalSpeed;
     void Start()
     {
         _controller = GetComponent<CharacterController>();
@@ -24,25 +26,41 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        CameraForwardLook();//virtualcamera‚ªŒ©‚Ä‚é•ûŒü‚ğforward‚É‚·‚é
-        Move();//gameobject.forward‚ğŒ³‚É‚µ‚½wasd‚Å‚ÌˆÚ“®
+        CameraForwardLook();//virtualcameraãŒè¦‹ã¦ã‚‹æ–¹å‘ã‚’forwardã«ã™ã‚‹
+        Move();//gameobject.forwardã‚’å…ƒã«ã—ãŸwasdã§ã®ç§»å‹•
     }
 
     void Move()
     {
-        // ƒLƒƒƒ‰ƒNƒ^[‚Ìƒ[ƒJƒ‹‹óŠÔ‚Å‚Ì•ûŒü
+        //ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒ­ãƒ¼ã‚«ãƒ«ç©ºé–“ã§ã®æ–¹å‘
         Vector3 forward = transform.transform.forward;
         Vector3 right = transform.transform.right;
-
-        float verticalSpeed = speed * Input.GetAxis("Vertical");
-        float horizontalSpeed = speed * Input.GetAxis("Horizontal");
-
-        // SimpleMoveŠÖ”‚ÅˆÚ“®‚³‚¹‚é
-        _controller.SimpleMove(forward * verticalSpeed + right * horizontalSpeed);
+        if (IsGrounded())
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                _verticalSpeed = dashSpeed * Input.GetAxis("Vertical");
+                _horizontalSpeed = dashSpeed * Input.GetAxis("Horizontal");
+            }
+            else
+            {
+                _verticalSpeed = speed * Input.GetAxis("Vertical");
+                _horizontalSpeed = speed * Input.GetAxis("Horizontal");
+            }
+        }
+        else
+        {
+            _verticalSpeed = 0f;
+            _horizontalSpeed = 0f;
+        }
+        // SimpleMoveé–¢æ•°ã§ç§»å‹•ã•ã›ã‚‹
+        _controller.SimpleMove(forward * _verticalSpeed + right * _horizontalSpeed);
     }
 
     void CameraForwardLook()
     {
         transform.rotation = Quaternion.Euler(0, _cinemachinePOV.m_HorizontalAxis.Value, 0);
     }
+
+    bool IsGrounded() => _controller.isGrounded;
 }
