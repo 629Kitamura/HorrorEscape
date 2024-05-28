@@ -3,33 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// プレイヤーを動かすコンポーネント
+/// プレイヤーオブジェクトのpositionとrotationを動かすコンポーネント
 /// </summary>
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMove : MonoBehaviour
 {
-    [SerializeField] float speed = 3f;
-    [SerializeField] float dashSpeed = 5f;
-
-    CharacterController _controller;
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
-    CinemachineOrbitalTransposer _cinemachineOrbitalTransposer;//bodyの情報を持つ変数
-    CinemachinePOV _cinemachinePOV;//aimがPOVのときの情報を持つ変数
+    [Header("歩きスピード"),SerializeField] float _speed = 3f;
+    [Header("走りスピード"),SerializeField] float _dashSpeed = 5f;
+    [Header("走りスタミナ（まだない）")]
+    CharacterController _controller;
+    CinemachinePOV _cinemachinePOV;//VirtualCameraのAimがPOVのときの情報を持つ変数
     float _verticalSpeed;
     float _horizontalSpeed;
+    bool IsGrounded() => _controller.isGrounded;
     void Start()
     {
         _controller = GetComponent<CharacterController>();
-        _cinemachineOrbitalTransposer = _virtualCamera.GetCinemachineComponent<CinemachineOrbitalTransposer>();
         _cinemachinePOV = _virtualCamera.GetCinemachineComponent<CinemachinePOV>();
     }
-
     void Update()
     {
-        CameraForwardLook();//virtualcameraが見てる方向をforwardにする
+        CameraForwardLook();
         Move();//gameobject.forwardを元にしたwasdでの移動
     }
-
     void Move()
     {
         //キャラクターのローカル空間での方向
@@ -39,13 +36,13 @@ public class PlayerMove : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                _verticalSpeed = dashSpeed * Input.GetAxis("Vertical");
-                _horizontalSpeed = dashSpeed * Input.GetAxis("Horizontal");
+                _verticalSpeed = _dashSpeed * Input.GetAxis("Vertical");
+                _horizontalSpeed = _dashSpeed * Input.GetAxis("Horizontal");
             }
             else
             {
-                _verticalSpeed = speed * Input.GetAxis("Vertical");
-                _horizontalSpeed = speed * Input.GetAxis("Horizontal");
+                _verticalSpeed = _speed * Input.GetAxis("Vertical");
+                _horizontalSpeed = _speed * Input.GetAxis("Horizontal");
             }
         }
         else
@@ -56,11 +53,9 @@ public class PlayerMove : MonoBehaviour
         // SimpleMove関数で移動させる
         _controller.SimpleMove(forward * _verticalSpeed + right * _horizontalSpeed);
     }
-
+    /// <summary>virtualcameraが見てる方向をforwardにする</summary>
     void CameraForwardLook()
     {
         transform.rotation = Quaternion.Euler(0, _cinemachinePOV.m_HorizontalAxis.Value, 0);
     }
-
-    bool IsGrounded() => _controller.isGrounded;
 }
