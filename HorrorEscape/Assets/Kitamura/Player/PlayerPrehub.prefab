@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4714330153565366221}
   m_Layer: 0
-  m_Name: Player
+  m_Name: PlayerPrehub
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -165,7 +165,7 @@ GameObject:
   - component: {fileID: 4714330154175072296}
   - component: {fileID: 4714330154175072303}
   m_Layer: 0
-  m_Name: CM vcam1
+  m_Name: PlayerCam
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -179,7 +179,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4714330154175072302}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.1189785, y: 0.8830724, z: -0.83055687}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -254,7 +254,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4714330154448687612}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.1189785, y: 0.8830724, z: -0.83055687}
+  m_LocalPosition: {x: 0, y: 2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -344,6 +344,7 @@ MonoBehaviour:
   _virtualCamera: {fileID: 4714330154175072303}
   _speed: 3
   _dashSpeed: 5
+  _Stamina: 0
 --- !u!114 &4714330154448687611
 MonoBehaviour:
   m_ObjectHideFlags: 0

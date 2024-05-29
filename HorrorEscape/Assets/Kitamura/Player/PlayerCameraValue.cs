@@ -40,8 +40,4 @@ public class PlayerCameraValue : MonoBehaviour
         _cinemachinePOV.m_VerticalAxis.m_MaxSpeed = AimSpeedY;
         _virtualCamera.m_Lens.FieldOfView = ViewingAngle;
     }
-
-
-
-
 }

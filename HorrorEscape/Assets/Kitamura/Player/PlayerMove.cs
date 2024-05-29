@@ -9,23 +9,32 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
-    [Header("歩きスピード"),SerializeField] float _speed = 3f;
-    [Header("走りスピード"),SerializeField] float _dashSpeed = 5f;
-    [Header("走りスタミナ（まだない）")]
+    [Header("歩きスピード"),SerializeField] float _walkSpeed = 3f;
+    [Header("走りスピード"),SerializeField] float _runSpeed = 5f;
+    [Header("走りスタミナ(second)"), SerializeField] float _Stamina;
+    [Header("ジャンプパワー"), SerializeField] float _jampPower;
     CharacterController _controller;
     CinemachinePOV _cinemachinePOV;//VirtualCameraのAimがPOVのときの情報を持つ変数
     float _verticalSpeed;
     float _horizontalSpeed;
+    float _speedMag;
+    /// <summary>CharacterControllerのスピード</summary>
+    public float SpeedMag { get => _speedMag;}
+
     bool IsGrounded() => _controller.isGrounded;
     void Start()
     {
         _controller = GetComponent<CharacterController>();
         _cinemachinePOV = _virtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        _cinemachinePOV.m_HorizontalAxis.Value = 0f;
+        _cinemachinePOV.m_VerticalAxis.Value = 0f;
+
     }
     void Update()
     {
         CameraForwardLook();
         Move();//gameobject.forwardを元にしたwasdでの移動
+        _speedMag = _controller.velocity.magnitude;//Charactorの速度
     }
     void Move()
     {
@@ -36,13 +45,13 @@ public class PlayerMove : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                _verticalSpeed = _dashSpeed * Input.GetAxis("Vertical");
-                _horizontalSpeed = _dashSpeed * Input.GetAxis("Horizontal");
+                _verticalSpeed = _runSpeed * Input.GetAxis("Vertical");
+                _horizontalSpeed = _runSpeed * Input.GetAxis("Horizontal");
             }
             else
             {
-                _verticalSpeed = _speed * Input.GetAxis("Vertical");
-                _horizontalSpeed = _speed * Input.GetAxis("Horizontal");
+                _verticalSpeed = _walkSpeed * Input.GetAxis("Vertical");
+                _horizontalSpeed = _walkSpeed * Input.GetAxis("Horizontal");
             }
         }
         else
@@ -52,6 +61,10 @@ public class PlayerMove : MonoBehaviour
         }
         // SimpleMove関数で移動させる
         _controller.SimpleMove(forward * _verticalSpeed + right * _horizontalSpeed);
+    }
+    void Jamp()
+    {
+
     }
     /// <summary>virtualcameraが見てる方向をforwardにする</summary>
     void CameraForwardLook()
