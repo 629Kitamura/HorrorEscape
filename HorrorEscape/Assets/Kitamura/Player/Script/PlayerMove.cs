@@ -8,18 +8,20 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public class PlayerMove : MonoBehaviour
 {
+    const float _gravityValue = -9.81f;
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
-    [Header("歩きスピード"),SerializeField] float _walkSpeed = 3f;
-    [Header("走りスピード"),SerializeField] float _runSpeed = 5f;
+    [Header("歩きスピード"), SerializeField] float _walkSpeed = 3f;
+    [Header("走りスピード"), SerializeField] float _runSpeed = 5f;
     [Header("走りスタミナ(second)"), SerializeField] float _Stamina;
     [Header("ジャンプパワー"), SerializeField] float _jampPower;
+    [Header("以下確認用")]
+    public bool _isGrounded;
     CharacterController _controller;
     CinemachinePOV _cinemachinePOV;//VirtualCameraのAimがPOVのときの情報を持つ変数
-    float _verticalSpeed;
-    float _horizontalSpeed;
+    Vector3 _playerVelocity;
     float _speedMag;
     /// <summary>CharacterControllerのスピード</summary>
-    public float SpeedMag { get => _speedMag;}
+    public float SpeedMag { get => _speedMag; }
 
     bool IsGrounded() => _controller.isGrounded;
     void Start()
@@ -28,13 +30,13 @@ public class PlayerMove : MonoBehaviour
         _cinemachinePOV = _virtualCamera.GetCinemachineComponent<CinemachinePOV>();
         _cinemachinePOV.m_HorizontalAxis.Value = 0f;
         _cinemachinePOV.m_VerticalAxis.Value = 0f;
-
     }
     void Update()
     {
-        CameraForwardLook();
         Move();//gameobject.forwardを元にしたwasdでの移動
+        CameraForwardLook();
         _speedMag = _controller.velocity.magnitude;//Charactorの速度
+        _isGrounded = IsGrounded();
     }
     void Move()
     {
@@ -45,30 +47,26 @@ public class PlayerMove : MonoBehaviour
         {
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                _verticalSpeed = _runSpeed * Input.GetAxis("Vertical");
-                _horizontalSpeed = _runSpeed * Input.GetAxis("Horizontal");
+                _playerVelocity = right * Input.GetAxis("Horizontal") * _runSpeed + forward * Input.GetAxis("Vertical") * _runSpeed;
             }
             else
             {
-                _verticalSpeed = _walkSpeed * Input.GetAxis("Vertical");
-                _horizontalSpeed = _walkSpeed * Input.GetAxis("Horizontal");
+                _playerVelocity = right * Input.GetAxis("Horizontal") * _walkSpeed + forward * Input.GetAxis("Vertical") * _walkSpeed;
             }
+            if (_playerVelocity.y < 0) _playerVelocity.y = 0;//接地していたら重力加算を0にする
+            if (Input.GetKeyDown(KeyCode.Space)) Jamp();
         }
-        else
-        {
-            _verticalSpeed = 0f;
-            _horizontalSpeed = 0f;
-        }
-        // SimpleMove関数で移動させる
-        _controller.SimpleMove(forward * _verticalSpeed + right * _horizontalSpeed);
+        _playerVelocity.y += _gravityValue * Time.deltaTime;//重力加算
+        _controller.Move(_playerVelocity * Time.deltaTime);// Move関数で移動させる
     }
+
     void Jamp()
     {
-
+        _playerVelocity.y += Mathf.Sqrt(_jampPower * -3.0f * _gravityValue); //jamp
     }
     /// <summary>virtualcameraが見てる方向をforwardにする</summary>
     void CameraForwardLook()
     {
         transform.rotation = Quaternion.Euler(0, _cinemachinePOV.m_HorizontalAxis.Value, 0);
-    }
+    }//maincameraのrotationを持ってきてるのと同じ
 }
