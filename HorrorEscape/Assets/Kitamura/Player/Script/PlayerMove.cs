@@ -10,6 +10,7 @@ public class PlayerMove : MonoBehaviour
 {
     const float _gravityValue = -9.81f;
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
+    [SerializeField] GameObject _playerHead;
     [Header("歩きスピード"), SerializeField] float _walkSpeed = 3f;
     [Header("走りスピード"), SerializeField] float _runSpeed = 5f;
     [Header("走りスタミナ(second)"), SerializeField] float _Stamina;
@@ -45,17 +46,18 @@ public class PlayerMove : MonoBehaviour
         Vector3 right = transform.transform.right;
         if (IsGrounded())
         {
+            _playerVelocity = Input.GetAxis("Horizontal") * right + Input.GetAxis("Vertical") * forward;
             if (Input.GetKey(KeyCode.LeftShift))
             {
-                _playerVelocity = right * Input.GetAxis("Horizontal") * _runSpeed + forward * Input.GetAxis("Vertical") * _runSpeed;
+                _playerVelocity *= _runSpeed;
             }
             else
             {
-                _playerVelocity = right * Input.GetAxis("Horizontal") * _walkSpeed + forward * Input.GetAxis("Vertical") * _walkSpeed;
+                _playerVelocity *= _walkSpeed;
             }
             if (_playerVelocity.y < 0) _playerVelocity.y = 0;//接地していたら重力加算を0にする
             if (Input.GetKeyDown(KeyCode.Space)) Jamp();
-        }
+        }//接地していなかったら移動できない
         _playerVelocity.y += _gravityValue * Time.deltaTime;//重力加算
         _controller.Move(_playerVelocity * Time.deltaTime);// Move関数で移動させる
     }
@@ -68,5 +70,7 @@ public class PlayerMove : MonoBehaviour
     void CameraForwardLook()
     {
         transform.rotation = Quaternion.Euler(0, _cinemachinePOV.m_HorizontalAxis.Value, 0);
-    }//maincameraのrotationを持ってきてるのと同じ
+        _playerHead.transform.rotation = Quaternion.Euler(_cinemachinePOV.m_VerticalAxis.Value
+            , _cinemachinePOV.m_HorizontalAxis.Value, 0);
+    }//maincameraのrotationを持ってきてるのと数値的には等しい
 }
