@@ -1,18 +1,21 @@
-using Cinemachine;
+Ôªøusing Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// playerÇÃCameraÇÃêîíl
+/// player„ÅÆCamera„ÅÆÊï∞ÂÄ§
 /// </summary>
 public class PlayerCameraValue : MonoBehaviour
 {
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
-    CinemachinePOV _cinemachinePOV;
-    [Header("Xé≤ä¥ìx(0.1~10î{)"),SerializeField,Range(0.1f,10f)] float _aimSpeedX = 1f;//ì¸óÕílÇÃèÊêî
-    [Header("Yé≤ä¥ìx(0.1~10î{)"), SerializeField,Range(0.1f,10f)] float _aimSpeedY = 1f;//ì¸óÕílÇÃèÊêî
-    [Header("éãñÏäp(90~120)"), SerializeField, Range(90, 120)] float _viewingAngle = 90;
-    [Header("Ç±Ç±ÇtrueÇ…Ç∑ÇÈÇ∆óLå¯âªÅ@Ç∑ÇÆfalseÇ…Ç»ÇÈÇÊ"),SerializeField]bool _apply = false;
+    PlayerMove _playerMove;
+    CinemachinePOV _POV;
+    CinemachineBasicMultiChannelPerlin _multiChannelPerlin;
+    [Header("XËª∏ÊÑüÂ∫¶(0.1~10ÂÄç)"), SerializeField, Range(0.1f, 10f)] float _aimSpeedX = 1f;
+    [Header("YËª∏ÊÑüÂ∫¶(0.1~10ÂÄç)"), SerializeField, Range(0.1f, 10f)] float _aimSpeedY = 1f;
+    [Header("Ë¶ñÈáéËßí(90~120)"), SerializeField, Range(90, 120)] float _viewingAngle = 90;
+    [Header("ÁîªÈù¢Êè∫„Çå"), SerializeField] bool _screenShaking = true;
+    [Header("„Åì„Åì„Çítrue„Å´„Åô„Çã„Å®ÊúâÂäπÂåñ„ÄÄ„Åô„Åêfalse„Å´„Å™„Çã"), SerializeField] bool _apply = false;
 
     public float AimSpeedX { get => _aimSpeedX; set => _aimSpeedX = value; }
     public float AimSpeedY { get => _aimSpeedY; set => _aimSpeedY = value; }
@@ -21,7 +24,9 @@ public class PlayerCameraValue : MonoBehaviour
 
     void Start()
     {
-        _cinemachinePOV = _virtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        _playerMove = GetComponent<PlayerMove>();
+        _POV = _virtualCamera.GetCinemachineComponent<CinemachinePOV>();
+        _multiChannelPerlin = _virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         DataSet();
     }
 
@@ -36,8 +41,22 @@ public class PlayerCameraValue : MonoBehaviour
 
     void DataSet()
     {
-        _cinemachinePOV.m_HorizontalAxis.m_MaxSpeed = AimSpeedX;
-        _cinemachinePOV.m_VerticalAxis.m_MaxSpeed = AimSpeedY;
+        _POV.m_HorizontalAxis.m_MaxSpeed = AimSpeedX;
+        _POV.m_VerticalAxis.m_MaxSpeed = AimSpeedY;
         _virtualCamera.m_Lens.FieldOfView = ViewingAngle;
+        ScreenShaking();
+    }
+    void ScreenShaking()
+    {
+        if (_screenShaking)
+        {
+            _multiChannelPerlin.m_AmplitudeGain = 0.5f;
+            _multiChannelPerlin.m_FrequencyGain = 0.5f;
+        }
+        else
+        {
+            _multiChannelPerlin.m_AmplitudeGain = 0;
+            _multiChannelPerlin.m_FrequencyGain = 0;
+        }
     }
 }
