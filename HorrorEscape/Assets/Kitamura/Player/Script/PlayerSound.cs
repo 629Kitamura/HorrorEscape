@@ -31,13 +31,15 @@ public class PlayerSound : MonoBehaviour
     AudioClip _previousSound;
     float _delayTime = 0.3f;
     float _time;
-    int _layerMask = 1 << 9;
+    [Header("地面のレイヤーを入力"), SerializeField] int _layer = 9;
+    int _layerMask ;
     GroundState _groundState;
     void Start()
     {
         _playerMove = GetComponent<PlayerMove>();
         _audioSouce = GetComponent<AudioSource>();
         _audioSouce.Stop();
+        _layerMask = 1 << _layer;
     }
 
     void Update()

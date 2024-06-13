@@ -16,7 +16,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject _playerHead;
     [Header("歩きスピード"), SerializeField] float _walkSpeed = 3f;
     [Header("走りスピード"), SerializeField] float _runSpeed = 5f;
-    [Header("走りスタミナ(second)"), SerializeField] float _Stamina;
+    [Header("走りスタミナ(秒)"), SerializeField] float _Stamina;
     [Header("ジャンプパワー"), SerializeField] float _jampPower;
     [Header("以下確認用(基本的には変更しない)")]
     [Tooltip("接地しているか"), SerializeField] bool _isGrounded;

@@ -8,7 +8,6 @@ using UnityEngine;
 public class PlayerCameraValue : MonoBehaviour
 {
     [SerializeField] CinemachineVirtualCamera _virtualCamera;
-    PlayerMove _playerMove;
     CinemachinePOV _POV;
     CinemachineBasicMultiChannelPerlin _multiChannelPerlin;
     [Header("X軸感度(0.1~10倍)"), SerializeField, Range(0.1f, 10f)] float _aimSpeedX = 1f;
@@ -24,7 +23,6 @@ public class PlayerCameraValue : MonoBehaviour
 
     void Start()
     {
-        _playerMove = GetComponent<PlayerMove>();
         _POV = _virtualCamera.GetCinemachineComponent<CinemachinePOV>();
         _multiChannelPerlin = _virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
         DataSet();
