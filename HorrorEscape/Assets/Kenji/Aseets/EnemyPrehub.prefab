@@ -114,7 +114,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _agent: {fileID: 0}
   _player: {fileID: 0}
-  discoverySphere: 5.11
+  _layerMask:
+    serializedVersion: 2
+    m_Bits: 8
+  _transform: {fileID: 7891993307675043421}
+  _discoverySphere: 0
+  _disState: 0
+  dis: 0
 --- !u!195 &7891993307675043416
 NavMeshAgent:
   m_ObjectHideFlags: 0
