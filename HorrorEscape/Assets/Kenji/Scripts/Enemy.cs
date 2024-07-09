@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -36,12 +37,13 @@ public class Enemy : MonoBehaviour
         {
             _agent.destination = _player.transform.position;
             _disState = true;
-            _animator.SetTrigger("Run02");
-        }
+            _animator.SetFloat("Speed",3.5f);
+        }//毎秒transformが変わってるから直すべき
         else
         {
-            nextGoal();//指定位置巡回に戻る
-            _animator.SetTrigger("walk02");
+            _agent.SetDestination(_goalpos[_destNum].position);
+            //nextGoal();//指定位置巡回に戻る
+            _animator.SetFloat("Speed",0f);
         }
         Attack();
     }
