@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -21,9 +22,9 @@ public class Enemy : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _agent = GetComponent<NavMeshAgent>();
+        _agent = this.gameObject.GetComponent<NavMeshAgent>();
         _animator = GetComponent<Animator>();
-        _agent.destination = _goalpos[_destNum].position;
+        _agent.SetDestination(_goalpos[_destNum].position);
         defaultMoveSpeed = _agent.speed;
         MoveSpeed = defaultMoveSpeed;
     }
@@ -31,25 +32,26 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        _dis = Vector3.Distance(transform.position, _player.transform.position);
+
+        nextGoal();//指定位置巡回に戻る
         Discavery();
-          _dis = Vector3.Distance(transform.position, _player.transform.position);
-        if (_discoverySphere > _dis)
-        {
-            _agent.destination = _player.transform.position;
-            _disState = true;
-            _animator.SetFloat("Speed",3.5f);
-        }//毎秒transformが変わってるから直すべき
-        else
-        {
-            _agent.SetDestination(_goalpos[_destNum].position);
-            //nextGoal();//指定位置巡回に戻る
-            _animator.SetFloat("Speed",0f);
-        }
         Attack();
     }
     void Discavery()
     {
         RaycastHit[] discoverySphere = Physics.SphereCastAll(transform.position, 3.0f, Vector3.forward);
+
+        if (discoverySphere.Length > _dis) 
+        {
+            _agent.destination = _player.transform.position;
+            _disState = true;
+            _animator.SetFloat("Speed", 3.5f);
+        }
+        else
+        {
+            _animator.SetFloat("Speed", 1f);
+        }
     }//敵がPlayer を検知
     void Attack()
     {
@@ -57,25 +59,26 @@ public class Enemy : MonoBehaviour
         Vector3 direction = new Vector3(0, 0, 5); // X軸方向を表すベクトル
         Ray ray = new Ray(transform.position, direction); // Rayを生成;
 
-        if (Physics.Raycast(ray, _dis, _layerMask))
+        if (Physics.Raycast(ray, out RaycastHit data, _dis, _layerMask))
         {
-            Debug.Log("当たる");
+            if (data.collider.gameObject.CompareTag("player")) 
+            {
+                Debug.Log("当たる");
+            }
         }//ここに攻撃の処理やアニメーションをかく
-    }
-    protected void nextGoal()
-    {
-        _destNum += 1;
-        if (_destNum == 3)
-        {
-            _destNum = 0;
-            //_destNum = Random.Range(0, 3); //ランダムの場合
-        }
-        _agent.destination = _goalpos[_destNum].position;
-        Debug.Log("Ss00");
     }
     private void OnDrawGizmos()
     {
-        Gizmos.color = new Color(1f, 0, 0, 0.5f);
-        Gizmos.DrawSphere (transform.position, _discoverySphere);
+        Gizmos.color = new Color(1f, 0, 0, 1f);
+        Gizmos.DrawSphere(this.transform.position, _discoverySphere);
+    }
+    protected void nextGoal()
+    {
+        if(_agent.remainingDistance < _agent.stoppingDistance)
+        {
+            _destNum = (_destNum + 1 ) % _goalpos.Length;
+            _agent.SetDestination(_goalpos[_destNum].position);
+        }
+        Debug.Log("Ss00");
     }
 }
